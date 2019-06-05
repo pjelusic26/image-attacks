@@ -2,13 +2,12 @@ import cv2
 import glob
 import os
 import numpy as np
+from pathlib import Path
 
-# Get images
-imgs = glob.glob('*.jpg')
-print(f"Found {len(imgs)} images.")
-
-
-
+# source directory
+src_folder = 'TestSet/'
+src_pth = Path(src_folder).resolve()                                                # Source Path
+imgs = src_pth.glob('*.jpg')
 
 ### SCALING ###
 ### SCALING ###
@@ -19,16 +18,17 @@ width = 256                                                                     
 width_str = str(width/512)                                                          # Calculating the ratio of resized and original image
 print(f"Resizing to {width} pixels, which is {width_str} of original.")
 
-folder = 'scaling'                                                                  # Creating folder for scaled images
-if not os.path.exists(folder):
-    os.makedirs(folder)
+dst_folder = Path(src_folder+'/scaling/').resolve()
+Path(dst_folder).mkdir(exist_ok=True)                                               # Creating folder for scaled images
 
 # Iterate through resizing and saving
 for img in imgs:
-    pic = cv2.imread(img, cv2.IMREAD_UNCHANGED)                                     # Loads image as such including alpha channel
+    img_name = f"{str(dst_folder)}/scaling-{width_str}-{str(img.name)}"
+    print(img_name)
+    pic = cv2.imread(str(img), cv2.IMREAD_UNCHANGED)                                # Loads image as such including alpha channel
     height = int(width * pic.shape[0] / pic.shape[1])                               # Defines height to be same as width => works for square images only
     pic = cv2.resize(pic, (width, height))                                          # Resizing
-    cv2.imwrite(folder + '/' + 'scaling' + '-' + width_str + '-' + img, pic)        # Saving and naming image
+    cv2.imwrite(img_name, pic)        # Saving and naming image
 
 print("Done scaling!") 
 
